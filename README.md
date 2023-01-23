@@ -1,1 +1,2 @@
-# thesis-generating-ml-pipelines
+# Towards Automatically Generating Context-Specific ML Pipelines
+This repository contains all publicly available artifacts related to a case study as part of my master thesis about generating Machine Learning (ML) Pipelines depending on the context provided by the user. For this, interviews shall be conducted to figure out the quantity as well as the type of context needed for generating quality ML Pipelines. In a second round of interviews a prototypical approach shall be evaluated by the participants.
