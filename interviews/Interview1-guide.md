@@ -9,9 +9,16 @@ This is the questionnaire for the first round of interviews.
 - How does an ML Pipeline look to you in general?
 - (Show ML workflow graph from Amershi et al.) What challenges in terms of quality do you see here?
 - What additional features/tools do you need/want?
+- How does a ML-Pipeline depend on the dataset?
+- How does a ML-Pipeline depend on the type of ML? (e.g.Supervised, unsupervised, reinforcement learning)
+- How does a ML-Pipeline depend on the type of problem? (e.g. Regression, Classification, Forecasting, Action learning)
+
+## Patterns
+- (Show list of ML design patterns)
+- Which ML design patterns do you use?
 
 ## Use Case 1
-- A simple dataset is presented
+- A simple dataset is presented (Supervised Learning, Regression)
 - Task: Build an ML pipeline
 
 
