@@ -9,3 +9,10 @@ In the second round of interviews, a prototype shall be evaluated. This applicat
 - Role
 - Years of professional experience in Machine Learning/MLOps
 - Worked with ML Pipelines before?
+
+# Interview Artifacts
+## Exploration Interviews
+- [Interview Guide](interview1-guide.md)
+
+## Evaluation Interviews
+- to be created

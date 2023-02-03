@@ -30,6 +30,7 @@ This is the questionnaire for the first round of interviews.
 
 ## Pipeline Generation
 - What parts of ML Pipelines can be automatically generated?
+- What kind and scope of user input can be used for generating ML pipelines?
 - (Show list of ML development quality measures from Serban et al.)
 - Of these measures, which can be automatically generated?
 - Rank these by importance (must-have, should-have, nice-to-have)
