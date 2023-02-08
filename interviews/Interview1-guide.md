@@ -3,34 +3,32 @@ This is the questionnaire for the first round of interviews.
 
 ## Demographics
 - Current role
-- Years of professional experience in ML/MLOps 
+- Years of professional experience in ML/MLOps
 
 ## General
-- How does an ML Pipeline look to you in general?
-- (Show ML workflow graph from Amershi et al.) What challenges in terms of quality do you see here?
-- What additional features/tools do you need/want?
-- How does a ML-Pipeline depend on the dataset?
-- How does a ML-Pipeline depend on the type of ML? (e.g.Supervised, unsupervised, reinforcement learning)
-- How does a ML-Pipeline depend on the type of problem? (e.g. Regression, Classification, Forecasting, Action learning)
+- How does an ML Pipeline look in general? What components should an ML Pipeline have?
+- How does an ML-Pipeline depend on the dataset?
+- How does an ML-Pipeline depend on the type of ML? (e.g.Supervised, unsupervised, reinforcement learning)
+- How does an ML-Pipeline depend on the type of problem? (e.g. Regression, Classification, Forecasting, Action learning)
 
-## Patterns
-- (Show list of ML design patterns)
-- Which ML design patterns do you use?
-
-## Use Case 1
-- A simple dataset is presented (Supervised Learning, Regression)
-- Task: Build an ML pipeline
-
-
-## Use Case 2
-- A simple ML pipeline is presented
-- What steps or features are missing?
+# Projects
+- What kind of project are you currently working on?
+  - Type of problem
+  - Requirements
+  - Goals
+- ML Pipeline
+  - Attributes
+  - Special components
+  - Challenges during setup
+- What challenges did you encounter?
+  - during start of project
+  - during development
+  - during release phases
 
 ```Reveal topic```
 
 ## Pipeline Generation
-- What parts of ML Pipelines can be automatically generated?
-- What kind and scope of user input can be used for generating ML pipelines?
-- (Show list of ML development quality measures from Serban et al.)
-- Of these measures, which can be automatically generated?
-- Rank these by importance (must-have, should-have, nice-to-have)
+- What challenges could be resolved/avoided by automatically generated ML Pipeline components?
+- What parts of ML Pipelines make sense when they were automatically generated? Which generated components would reduce time? Which generated component would reduce mistakes?
+- Would you trust an automatically generated component?
+- What kind and scope of user input can be used for generating ML pipelines? (What kind of attributes?, how (json/yaml/questions))

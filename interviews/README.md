@@ -5,10 +5,9 @@ The goal of the first one is to collect quality requirements of ML Pipelines as 
 
 In the second round of interviews, a prototype shall be evaluated. This application is supposed to generate Kubeflow Pipelines based on  user-specific context.
 
-## Interview Requirements
-- Role
-- Years of professional experience in Machine Learning/MLOps
-- Worked with ML Pipelines before?
+## Interviewee Requirements
+- Currently in an ML project
+- Worked with ML Pipelines before
 
 # Interview Artifacts
 ## Exploration Interviews
