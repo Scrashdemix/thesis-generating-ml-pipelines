@@ -1,19 +1,22 @@
 # Towards Automatically Generating Context-Specific ML Pipelines
-This repository contains all publicly available artifacts related to a case study as part of my master thesis about generating Machine Learning (ML) Pipelines depending on the context provided by the user. For this, interviews shall be conducted to figure out the quantity as well as the type of context needed for generating quality ML Pipelines. In a second round of interviews a prototypical approach shall be evaluated by the participants. This prototype is supposed to generate Kubeflow Pipelines based on user input.
+This repository contains all publicly available artifacts related to a case study as part of my master thesis about generating Machine Learning (ML) pipelines depending on the context provided by the user.
+As a first step, interviews will be conducted to analyze practitioner requirements for ML pipeline steps, pipeline quality, as well as the degree of context-dependent variants.
+A prototypical generation approach will be created based on these results.
+Finally, this approach will be evaluated in a second round of interviews, where participants use the prototypical tool support.
 
 ## Research Objective
 ```
-Develop a Program
-For the purpose of Automatic ML Pipeline Generation
-From the viewpoint of data scientists
-In the context of MLOps
+Develop a tool-supported approach
+For the purpose of generating context-dependent ML pipelines
+From the viewpoint of ML practitioners
+In the context of different ML project requirements
 ```
 
 ## Research Questions
-__RQ 1:__ How does an ML Pipeline look like?
+__RQ 1.1:__ Which components are important for effective ML pipelines?
 
-__RQ 1:__ What are quality requirements of ML Pipelines?
+__RQ 1.2:__ Which quality requirements are important for effective ML pipelines?
 
-__RQ 2:__ How do ML Pipelines depend on an user-specific context?
+__RQ 2:__ How much are ML pipeline steps and quality requirements influenced by the project- or user-specific context?
 
-__RQ 3:__ How can high-quality ML Pipelines be generated depending on the context?
+__RQ 3:__ What is a feasible approach to automatically generate context-dependent, high-quality ML pipelines?
