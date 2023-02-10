@@ -11,6 +11,7 @@ Please answer the following questions based on your personal professional experi
 - What general components should most ML pipelines have? (if participant has problems to name components, show frequently used ones compiled from literature)
 - What situational components do some ML pipelines have? (if participant has problems to name components, show frequently used ones compiled from literature)
 - What are the most important quality requirements for ML pipelines? (if participant has problems to name requirements, show frequently used ones compiled from literature)
+- What are the most common challenges regarding ML pipelines? (if participant has problems to name requirements, show frequently used ones compiled from literature)
 - How do components and quality requirements of an ML pipeline depend on ...
   - the dataset?
   - the industry domain?
