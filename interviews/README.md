@@ -1,17 +1,21 @@
 # Interview Description
-There shall be two rounds of semi-structured interviews.
+There will be two rounds of semi-structured interviews.
 
-The goal of the first one is to collect quality requirements of ML Pipelines as well as which types and scope of context. Additionally, the interviewees can make suggestions on how ML Pipelines
+The goal of the first one is to collect and validate components and quality requirements for ML pipelines, as well as the influence of contextual factors on these.
+Additionally, the interviewees are asked for their general requirements regarding the automatic generation of ML pipelines.
 
-In the second round of interviews, a prototype shall be evaluated. This application is supposed to generate Kubeflow Pipelines based on  user-specific context.
+In the second round of interviews, a prototype will be evaluated.
+This application is supposed to generate ML pipelines based on user-specific context.
 
 ## Interviewee Requirements
 - Currently in an ML project
-- Worked with ML Pipelines before
+- Worked with ML pipelines before
 
-# Interview Artifacts
-## Exploration Interviews
-- [Interview Guide](interview1-guide.md)
+## Interview Execution
+See [Interview Guide](interview1-guide.md).
 
-## Evaluation Interviews
-- to be created
+## Data Collection
+TODO
+
+## Data Analysis
+TODO
