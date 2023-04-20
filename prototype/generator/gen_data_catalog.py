@@ -1,4 +1,5 @@
-import os, yaml, pathlib
+import os, yaml
+from pathlib import Path
 
 from config import constants
 
@@ -46,12 +47,14 @@ def build_dataset_dict(dataset: dict) -> dict:
         ds[dataset['name']]['file_format'] = dataset['file_format']
     return ds
 
-def update_data_catalog(datasets: list, root_directory: str) -> None:
-    catalog_path = pathlib.Path(root_directory).joinpath(constants.data_catalog_path).absolute()
+def update_data_catalog(datasets: list, root_directory: Path) -> None:
+    catalog_path = root_directory.joinpath(constants.data_catalog_path).absolute()
     # Ensure conf/base/catalog.yaml exists
     if not os.path.exists(catalog_path):
         raise FileNotFoundError("Catalog.yml doesn't exist in the project folder.")
     # write datasets into file
+    if len(datasets) == 0:  # return if no datasets were specified
+        return
     with open(catalog_path, "w") as catalog_file:
         for dataset in datasets:
             yaml.dump(build_dataset_dict(dataset=dataset), catalog_file, sort_keys=False)

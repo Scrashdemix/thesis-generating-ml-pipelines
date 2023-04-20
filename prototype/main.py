@@ -1,6 +1,5 @@
 import yaml
 from argparse import ArgumentParser
-from pathlib import Path
 
 from generator.generator import generate
 
@@ -36,4 +35,5 @@ def read_yaml_file(file_arg: str) -> dict:
 if __name__ == "__main__":
     args = parse_arguments()
     config = read_yaml_file(args['filename'])
-    generate(config, location=args['location'])
+    print(config)
+    generate(config, root_dir_path=args['location'])
