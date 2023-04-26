@@ -35,5 +35,4 @@ def read_yaml_file(file_arg: str) -> dict:
 if __name__ == "__main__":
     args = parse_arguments()
     config = read_yaml_file(args['filename'])
-    print(config)
     generate(config, root_dir_path=args['location'])

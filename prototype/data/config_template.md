@@ -17,13 +17,15 @@ datasets:
 problem: 'regression' | 'classification'  # Type of problem
 train-test-split:
   train-ratio: <Value between 0 and 1>  # Ratio of training data from the original data
+  test-ratio: <Value between 0 and 1>  # Ratio of test data from the original data
 training:
   features:  # [Optional:] list of feature names which are used for training all models. If none, all available features are used
     - <name of feature>
     - ...
+  target_label: <name of the feature which should be used as target variable>
   models:
     - algorithm: <model algorithm>  # maybe some kind of key for sklearn
-      cv: <int> | false  # Cross-validation's k if it's enabled default: false
+      cv: <int> | false  # Cross-validation's k if it's enabled, default: false
       parameters:
         <name of parameter>:  # List of values or min/max
 

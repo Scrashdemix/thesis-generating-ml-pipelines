@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import yaml
+from typing import Dict
 
 
 def generate_pipeline_file_structure(root_dir: Path, name: str) -> Path:
@@ -41,3 +43,17 @@ def create_pipeline(**kwargs) -> Pipeline:
         ]
     )
 """)
+
+def write_parameters_file(root_dir: Path, pipeline_name: str, params: dict) -> None:
+    with open(root_dir.joinpath('conf', 'base', 'parameters', f'{pipeline_name}.yml'), 'w') as file:
+        yaml.dump(params, file, sort_keys=False)
+
+def dataset_wrapper(name: str, type: str, filepath: str, versioned: bool=False) -> Dict:
+    res = {
+        'name': name,
+        'type': type,
+        'filepath': filepath,
+    }
+    if versioned:
+        res.update({'versioned': True})
+    return res
