@@ -5,7 +5,7 @@ def add_hooks(root_dir: Path):
     hooks_file = root_dir.joinpath('src', root_dir.name, 'hooks.py')
     hooks = []
     open(hooks_file, 'w')
-    hooks.append(add_hook_data_visualizer(hooks_file))
+    hooks.append(add_hook_data_visualizer(hooks_file, root_dir))
     hooks.append(add_hook_mlflow_tracking(hooks_file))
     add_hooks_to_settings(root_dir, hooks)
 
@@ -19,36 +19,23 @@ def add_hooks_to_settings(root_dir:Path, hook_classes: list):
 HOOKS = ({hook_init_string})''')
 
 
-def add_hook_data_visualizer(hooks_file:Path):
+def add_hook_data_visualizer(hooks_file:Path, root_dir:Path):
+    report_path = Path('../../data/08_reporting/report.html')
     with open(hooks_file, 'a') as file:
         file.write('''from kedro.framework.hooks import hook_impl
-import logging, os
 import pandas as pd
-import tensorflow as tf
+from pathlib import Path
 
 
 class DataCatalogVisualizer:
 
-    def __init__(self) -> None:
-        self.tensorboard_dir = 'summary/'
-        os.makedirs(self.tensorboard_dir, exist_ok=True)
-
-    @property
-    def _logger(self):
-        return logging.getLogger(__name__)
-
     @hook_impl
     def after_dataset_loaded(self, dataset_name: str, data: pd.DataFrame) -> None:
-        if isinstance(data, pd.DataFrame):
-            gen_info_writer = tf.summary.create_file_writer(self.tensorboard_dir)  # .histogram(name="Diabetes Age", data=df['age'])
-            with gen_info_writer.as_default():
-                try:
-                    for feature in data.columns:
-                        if data[feature].dtype == 'int64':
-                            tf.summary.histogram(name=feature, data=data[feature], step=5)
-                            gen_info_writer.flush()
-                except:
-                    self._logger.warning(f'Dataset {dataset_name} can not be visualized. Type of data: {type(data)}')
+        if not isinstance(data, pd.DataFrame): return
+        import sweetviz as sv
+        report = sv.analyze(data)
+        report_path = Path('data/08_reporting/').joinpath(f'{dataset_name}_viz.html')
+        report.show_html(filepath=str(report_path), open_browser=False)
 
 ''')
     return 'DataCatalogVisualizer'

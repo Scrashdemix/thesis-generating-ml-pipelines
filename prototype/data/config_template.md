@@ -14,6 +14,7 @@ datasets:
       <Credentials needed for accessing the dataset>
   - name: ...
     ...
+visualization: 'sweetviz'  # [Optional:] data visualization using sweetviz (html report gets generated)
 problem: 'regression' | 'classification'  # Type of problem
 train-test-split:
   train-ratio: <Value between 0 and 1>  # Ratio of training data from the original data

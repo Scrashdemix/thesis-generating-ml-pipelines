@@ -3,10 +3,11 @@ datasets:
 #    type: 'csv'
 #    filepath: 'https://github.com/CivilServiceUSA/us-states/blob/v1.0.0/data/states.csv'
   - name: salary_ds
-    type: 'csv'
-    filepath: 'data/01_raw/Salary_dataset.csv'
+    type: csv
+    filepath: data/01_raw/Salary_dataset.csv
     #versioned: True
-problem: 'regression'
+visualization: sweetviz
+problem: regression
 train-test-split:
   train-ratio: 0.8
 training:
@@ -15,8 +16,8 @@ training:
   target_label:
     - Salary
   models:
-    - algorithm: 'tree.DecisionTreeRegressor'
+    - algorithm: tree.DecisionTreeRegressor
       parameters:
         criterion: ['squared_error', 'friedman_mse', 'poisson']
-    - algorithm: 'linear_model.LinearRegression'
+    - algorithm: linear_model.LinearRegression
 
