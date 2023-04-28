@@ -61,7 +61,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, parameters):
         search_space.append(new_model)
     grid_search = GridSearchCV(pipeline, search_space, verbose=4)
     grid_search.fit(X_train, y_train)
-    log_params(grid_search.best_params_)
+    log_params({'best_params': grid_search.best_params_})
     return [grid_search.best_estimator_]
     
 

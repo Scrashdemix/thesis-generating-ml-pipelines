@@ -4,8 +4,7 @@ import yaml
 from typing import Dict
 
 
-def generate_pipeline_file_structure(root_dir: Path, name: str) -> Path:
-    pipeline_dir = root_dir.joinpath('src', root_dir.name, 'pipelines')
+def generate_pipeline_file_structure(pipeline_dir: Path, name: str) -> Path:
     new_pipeline_dir = pipeline_dir.joinpath(name)
     os.makedirs(new_pipeline_dir, exist_ok=True)
     with open(new_pipeline_dir.joinpath('__init__.py'), 'w') as file:
