@@ -31,7 +31,7 @@ def write_pipeline_file(pipeline_dir: Path, nodes_list: list) -> None:
                 outputs={str(node['outputs'])},
                 name='{node['name']}',
             ),'''
-            file.write(f"""from kedro.pipeline import Pipeline, node, pipeline
+        file.write(f"""from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import {func_str}
 

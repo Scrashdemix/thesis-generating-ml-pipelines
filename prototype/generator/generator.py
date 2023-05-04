@@ -19,7 +19,7 @@ from generator.hook_writer import add_hooks
 
 def generate(config: dict, root_dir_path: str) -> None:
     root_dir = Path(root_dir_path)
-    pipeline_dir = root_dir.joinpath('src', root_dir.name, 'pipelines')
+    pipeline_dir = root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'pipelines')
     config['nodes'] = []
     # Hooks
     add_hooks(root_dir)

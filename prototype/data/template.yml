@@ -20,4 +20,5 @@ training:
       parameters:
         criterion: ['squared_error', 'friedman_mse', 'poisson']
     - algorithm: linear_model.LinearRegression
+metrics: [r2, max_error]
 

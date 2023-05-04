@@ -29,5 +29,6 @@ training:
       cv: <int> | false  # Cross-validation's k if it's enabled, default: false
       parameters:
         <name of parameter>:  # List of values or min/max
+metrics: <string id / list of string ids>  # String id or list of those of the corresponding sklearn metric
 
 ```

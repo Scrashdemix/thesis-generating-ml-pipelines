@@ -26,7 +26,7 @@ class ModelPipeline:
         nodes_list = []
         # Add train-test split node
         node_tts, dataset_tts = self.Nodes.node_train_test_split(
-            self.root_dir, self.name, self.config, input_datasets=[self.last_datasets[0], 'params:split_options']
+            self.root_dir, self.name, self.config, input_datasets=[self.last_datasets[0]]
         )
         nodes_list.append(node_tts)
         # Add normalization nodes
@@ -49,7 +49,7 @@ class ModelPipeline:
         write_pipeline_file(self.model_pipeline_dir, nodes_list)
 
     class Nodes:
-        def node_train_test_split(root_dir: Path, name: str, config: dict, input_datasets):
+        def node_train_test_split(root_dir: Path, name: str, config: dict, input_datasets: list):
             code = f'''import pandas as pd
 from typing import Dict, Tuple
 from sklearn.model_selection import train_test_split
@@ -73,6 +73,7 @@ def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
                 'training': {'features': config['training']['features'],
                              'target_label': config['training']['target_label']}
                 }}
+            input_datasets.append('params:split_options')
             write_parameters_file(root_dir, name, params)
             return {
                 'func': 'split_train_test',
@@ -83,14 +84,15 @@ def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
             }, ['X_train', 'X_test', 'y_train', 'y_test']
 
         def node_training_model(root_dir: str, name: str, config: dict):
-            code = '''import pandas as pd
+            code = f'''import pandas as pd
 from sklearn.base import BaseEstimator
 
 
-def train_model(X_train: pd.DataFrame, y_train: pd.Series, parameters):
+def train_model(X_train: pd.DataFrame, y_train: pd.Series, model_options: dict, metrics: list):
     from sklearn.pipeline import Pipeline
     from sklearn.model_selection import GridSearchCV
     from mlflow import log_params
+    from mlflow.sklearn import log_model
 
     class DummyEstimator(BaseEstimator):
         def fit(self): pass
@@ -98,24 +100,39 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, parameters):
     
     pipeline = Pipeline([('clf', DummyEstimator())])
     search_space = []
-    for param in parameters:
-        new_model = {'clf': [get_model_type(param['algorithm'])()]}
+    for param in model_options:
+        new_model = {{'clf': [get_model_type(param['algorithm'])()]}}
         if not param.get('parameters', None) is None:
-            new_model.update({'clf__'+key: value for key, value in param['parameters'].items()})
+            new_model.update({{'clf__'+key: value for key, value in param['parameters'].items()}})
         search_space.append(new_model)
-    grid_search = GridSearchCV(pipeline, search_space, verbose=4)
+    grid_search = GridSearchCV(
+        pipeline,
+        search_space,
+        scoring=metrics,
+        refit=metrics[0],
+        verbose=4)
     grid_search.fit(X_train, y_train)
-    log_params({'best_params': grid_search.best_params_})
+    log_params({{'best_params': grid_search.best_params_}})
+    log_model(
+        sk_model=grid_search.best_estimator_,
+        artifact_path="data/06_models/Model.pickle",
+        registered_model_name="model",
+    )
     return [grid_search.best_estimator_]
     
 
 def get_model_type(type: str):
     from sklearn import tree, linear_model
-    model_types = {
+    model_types = {{
         'tree.DecisionTreeClassifier': tree.DecisionTreeClassifier,
         'tree.DecisionTreeRegressor': tree.DecisionTreeRegressor,
         'linear_model.LinearRegression': linear_model.LinearRegression,
-    }
+        'linear_model.LogisticRegression': linear_model.LogisticRegression,
+        'linear_model.PassiveAggressiveClassifier': linear_model.PassiveAggressiveClassifier,
+        'linear_model.RidgeClassifier': linear_model.RidgeClassifier,
+        'linear_model.SGDClassifier': linear_model.SGDClassifier,
+        'linear_model.Ridge': linear_model.Ridge,
+    }}
     return model_types.get(type)
 '''
             models = []
@@ -126,31 +143,41 @@ def get_model_type(type: str):
                     new_model['parameters'] = params
                 models.append(new_model)
             write_parameters_file(root_dir, name, {'model_options': models})
+            metric_params = config.get('metrics') if config.get('metrics') else ''
+            write_parameters_file(root_dir, name, {'metrics': metric_params})
             model_name = 'Model'
             output_dataset = dataset_wrapper(model_name, 'pickle', f'data/06_models/{model_name}.pickle', versioned=True)
             return {
                 'func': 'train_model',
                 'name': 'Model_Training',
                 'code': code,
-                'inputs': ['X_train', 'y_train', 'params:model_options'],
+                'inputs': ['X_train', 'y_train', 'params:model_options', 'params:metrics'],
                 'outputs': [model_name]
             }, [output_dataset]
 
         def node_model_evaluation(root_dir: str, name: str, config: dict):
             mixin = 'RegressorMixin' if str(config['problem']).lower() == 'regression' else 'ClassifierMixin'
-            metric = 'R2' if str(config['problem']).lower() == 'regression' else 'Accuracy'
+            default_metric = 'r2' if str(config['problem']).lower() == 'regression' else 'accuracy'
             code = f'''
 from sklearn.base import {mixin}
+from sklearn.metrics import get_scorer
 from mlflow import log_metric
-def evaluate_model(model: {mixin}, X_test: pd.DataFrame, y_test: pd.Series):
-    result = model.score(X_test, y_test)
-    log_metric('{metric}', result)
+def evaluate_model(model: {mixin}, X_test: pd.DataFrame, y_test: pd.Series, metrics: list):
+    if not hasattr(model, 'predict'):
+        raise AttributeError('The model has no attribute "predict".')
+    if len(metrics) == 0:
+        score = model.score(X_test, y_test)
+        log_metric('{default_metric}', score)
+        return
+    for metric in metrics:
+        score = get_scorer(metric)(model, X_test, y_test)
+        log_metric(metric, score)
 
     '''
             return {
                 'func': 'evaluate_model',
                 'name': 'Model_Evaluation',
                 'code': code,
-                'inputs': ['Model', 'X_test', 'y_test'],
+                'inputs': ['Model', 'X_test', 'y_test', 'params:metrics'],
                 'outputs': None
             }
