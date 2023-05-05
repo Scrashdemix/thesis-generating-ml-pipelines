@@ -22,7 +22,7 @@ def generate(config: dict, root_dir_path: str) -> None:
     pipeline_dir = root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'pipelines')
     config['nodes'] = []
     # Hooks
-    add_hooks(root_dir)
+    add_hooks(root_dir, config)
     # Data pipeline
     data_pipeline_dir = generate_pipeline_file_structure(pipeline_dir, 'data_pipeline')
     data_pipe = DataPipeline(config, data_pipeline_dir)
