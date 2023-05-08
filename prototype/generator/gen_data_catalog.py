@@ -35,12 +35,6 @@ def build_dataset_dict(dataset: dict) -> dict:
     if (dataset.get('credentials', False)):  # add credentials
         ds[dataset['name']]['credentials'] = dataset['credentials']
 
-    # HTTP(s) can't be versioned
-    if (dataset.get('versioned', False) and str(dataset['filepath']).startswith('http')):
-        raise ValueError(f"Dataset {dataset['name']} cannot be versioned because HTTP(s) does not support versioning.")
-    else:
-        ds[dataset['name']]['versioned'] = dataset.get('versioned', False)
-
     # Add file_format to spark spec
     if (str.lower(dataset['type']) == 'spark' and 
         dataset.get('file_format', False)):
