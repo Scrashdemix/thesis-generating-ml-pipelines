@@ -13,6 +13,7 @@ class ModelPipeline:
         self.last_datasets = last_datasets
         self.next_datasets = []
         self.additional_nodes = []
+        self.params = {}
         self._structure()
         self._write_files()
 
@@ -24,18 +25,41 @@ class ModelPipeline:
     
     def _structure(self):
         nodes_list = []
+        # Features
+        feature_list = list(
+                {item: {}} if isinstance(item, str) else item
+                for item in self.config['features']
+        )
+        feature_all_names = list({
+            k: v
+            for d in feature_list
+            for k, v in d.items()
+            }.keys())
         # Add train-test split node
-        node_tts, dataset_tts = self.Nodes.node_train_test_split(
-            self.root_dir, self.name, self.config, input_datasets=[self.last_datasets[0]]
+        node_tts, dataset_tts, params = self.Nodes.node_train_test_split(
+            self.root_dir, self.config, feature_all_names, input_datasets=[self.last_datasets[0]]
         )
         nodes_list.append(node_tts)
+        self.params.update(params)
         # Add normalization nodes
+        scaled = False
+        scaled_feature_names = list({
+            k: v
+            for d in feature_list
+            for k, v in d.items()
+            if v.get('normalized', False)
+            }.keys())
+        if len(scaled_feature_names) > 0:
+            nodes = self.Nodes.node_scale_features(self.root_dir, scaled_feature_names)
+            nodes_list.extend(nodes)
+            scaled = True
         # Add training node
-        node_mt, dataset_mt = self.Nodes.node_training_model(self.root_dir, self.name, self.config)
+        node_mt, dataset_mt, params = self.Nodes.node_training_model(self.root_dir, self.config, scaled)
         nodes_list.append(node_mt)
         self.next_datasets.extend(dataset_mt)
+        self.params.update(params)
         # Add evaluation node
-        node_me = self.Nodes.node_model_evaluation(self.root_dir, self.name, self.config)
+        node_me = self.Nodes.node_model_evaluation(self.root_dir, self.config, scaled)
         nodes_list.append(node_me)
         # Collect additional nodes
         self.additional_nodes.extend(nodes_list)
@@ -43,21 +67,26 @@ class ModelPipeline:
 
     def _write_files(self):
         nodes_list = self.additional_nodes
+        # write nodes.py
         with open(self.model_pipeline_dir.joinpath('nodes.py'), 'w') as node_file:
             for node in nodes_list:
                 node_file.write(node['code'])
+        # write pipeline.py
         write_pipeline_file(self.model_pipeline_dir, nodes_list)
+        # write pipeline specific params
+        write_parameters_file(self.root_dir, self.name, self.params)
 
     class Nodes:
-        def node_train_test_split(root_dir: Path, name: str, config: dict, input_datasets: list):
+        def node_train_test_split(root_dir: Path, config: dict, feature_names: list, input_datasets: list):
             code = f'''import pandas as pd
 from typing import Dict, Tuple
 from sklearn.model_selection import train_test_split
             
 def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
-    training_params = parameters['training']
-    X = data[training_params['features']]
-    y = data[training_params['target_label']]
+    feature_params = parameters['features']
+    target_label = parameters['target_label']
+    X = data[feature_params]
+    y = data[target_label]
     train_ratio = parameters.get('train-test-split', None).get('train-ratio', None)
     test_ratio = parameters.get('train-test-split', None).get('test-ratio', None)
     X_train, X_test, y_train, y_test = train_test_split(
@@ -70,20 +99,19 @@ def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
 '''
             params = {'split_options': {
                 'train-test-split': config['train-test-split'],
-                'training': {'features': config['training']['features'],
-                             'target_label': config['training']['target_label']}
-                }}
+                'features': feature_names,
+                'target_label': config['target_label'],},
+                }
             input_datasets.append('params:split_options')
-            write_parameters_file(root_dir, name, params)
             return {
                 'func': 'split_train_test',
                 'name': 'Train_test_split',
                 'code': code,
                 'inputs': input_datasets,
                 'outputs': ['X_train', 'X_test', 'y_train', 'y_test']
-            }, ['X_train', 'X_test', 'y_train', 'y_test']
+            }, ['X_train', 'X_test', 'y_train', 'y_test'], params
 
-        def node_training_model(root_dir: str, name: str, config: dict):
+        def node_training_model(root_dir: str, config: dict, scaled: bool=False):
             code = f'''import pandas as pd
 from sklearn.base import BaseEstimator
 
@@ -142,20 +170,20 @@ def get_model_type(type: str):
                 if not params is None:
                     new_model['parameters'] = params
                 models.append(new_model)
-            write_parameters_file(root_dir, name, {'model_options': models})
             metric_params = config.get('metrics') if config.get('metrics') else ''
-            write_parameters_file(root_dir, name, {'metrics': metric_params})
+            parameters = {'model_options': models, 'metrics': metric_params}
             model_name = 'Model'
             output_dataset = dataset_wrapper(model_name, 'pickle', f'data/06_models/{model_name}.pickle', versioned=True)
+            X_train_input_name = 'X_train_scaled' if scaled else 'X_train'
             return {
                 'func': 'train_model',
                 'name': 'Model_Training',
                 'code': code,
-                'inputs': ['X_train', 'y_train', 'params:model_options', 'params:metrics'],
+                'inputs': [X_train_input_name, 'y_train', 'params:model_options', 'params:metrics'],
                 'outputs': [model_name]
-            }, [output_dataset]
+            }, [output_dataset], parameters
 
-        def node_model_evaluation(root_dir: str, name: str, config: dict):
+        def node_model_evaluation(root_dir: str, config: dict, scaled: bool=False):
             mixin = 'RegressorMixin' if str(config['problem']).lower() == 'regression' else 'ClassifierMixin'
             default_metric = 'r2' if str(config['problem']).lower() == 'regression' else 'accuracy'
             code = f'''
@@ -174,10 +202,39 @@ def evaluate_model(model: {mixin}, X_test: pd.DataFrame, y_test: pd.Series, metr
         log_metric(metric, score)
 
     '''
+            X_test_input_name = 'X_test_scaled' if scaled else 'X_test'
             return {
                 'func': 'evaluate_model',
                 'name': 'Model_Evaluation',
                 'code': code,
-                'inputs': ['Model', 'X_test', 'y_test', 'params:metrics'],
+                'inputs': ['Model', X_test_input_name, 'y_test', 'params:metrics'],
                 'outputs': None
             }
+
+        def node_scale_features(root_dir: str, feature_names: dict):
+            feature_names_str = ','.join(feature_names)
+            code_X_train = f'''
+from sklearn.preprocessing import MinMaxScaler
+def scale_X_train(X_train: pd.DataFrame):
+    scaler = MinMaxScaler()
+    X_train['{feature_names_str}'] = scaler.fit_transform(X_train['{feature_names_str}'])
+    return X_train, scaler.get_params()
+'''
+            code_X_test = f'''
+def scale_X_test(X_test: pd.DataFrame, scaler_params:dict):
+    scaler = MinMaxScaler().set_params(scaler_params)
+    return scaler.transform(X_test['{feature_names_str}'])
+'''
+            return [{
+                'func': 'scale_X_train',
+                'name': 'Scale_X_train',
+                'code': code_X_train,
+                'inputs': ['X_train'],
+                'outputs': ['X_train_scaled', 'scaler_params']
+            }, {
+                'func': 'scale_X_test',
+                'name': 'Scale_X_test',
+                'code': code_X_test,
+                'inputs': ['X_test', 'scaler_params'],
+                'outputs': ['X_test_scaled']
+            }]
