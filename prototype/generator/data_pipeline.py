@@ -42,7 +42,11 @@ class DataPipeline:
 
     class Nodes:
         def node_join_datasets(dataset_names: list):
-            output_dataset = dataset_wrapper(name='joined_dataset', type='csv', filepath='data/02_intermediate/joined_data.csv')
+            output_dataset = dataset_wrapper(
+                name='joined_dataset',
+                type='csv',
+                filepath='data/02_intermediate/joined_data.csv',
+                layer='intermediate')
             code = """import pandas as pd
 from functools import reduce
 

@@ -21,6 +21,10 @@ def generate(config: dict, root_dir_path: str) -> None:
     root_dir = Path(root_dir_path)
     pipeline_dir = root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'pipelines')
     config['nodes'] = []
+    # Add layer 'raw' to initial datasets
+    for ds in config['datasets']:
+        if ds.get('layer', None) is None:
+            ds['layer'] = 'raw'
     # Hooks
     add_hooks(root_dir, config)
     # Data pipeline

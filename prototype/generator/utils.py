@@ -41,12 +41,12 @@ def write_parameters_file(root_dir: Path, pipeline_name: str, params: dict) -> N
     with open(root_dir.joinpath('conf', 'base', 'parameters', f'{pipeline_name}.yml'), 'w') as file:
         yaml.dump(params, file, sort_keys=False)
 
-def dataset_wrapper(name: str, type: str, filepath: str, versioned: bool=False) -> Dict:
+def dataset_wrapper(name: str, type: str, filepath: str, layer: str) -> Dict:
     res = {
         'name': name,
         'type': type,
-        'filepath': filepath,
+        'layer': layer,
     }
-    if versioned:
-        res.update({'versioned': True})
+    if not filepath is None:
+        res['filepath'] = filepath
     return res

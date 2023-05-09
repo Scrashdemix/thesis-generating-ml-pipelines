@@ -25,9 +25,12 @@ def build_dataset_dict(dataset: dict) -> dict:
     ds = {
         dataset['name']: {
             'type': dataset_type,
-            'filepath': dataset['filepath'],
+            'layer': dataset['layer'],
             }
         }
+    if not str(dataset['type']).lower() == 'memory':  # add filepath if not MemoryDataSet
+        ds[dataset['name']]['filepath'] = dataset['filepath']
+
     if (dataset.get('load_args', False)):  # add load_args
         ds[dataset['name']]['load_args'] = dataset['load_args']
     if (dataset.get('save_args', False)):  # add save_args
