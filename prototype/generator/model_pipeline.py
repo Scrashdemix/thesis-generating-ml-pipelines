@@ -48,7 +48,7 @@ class ModelPipeline:
             k: v
             for d in feature_list
             for k, v in d.items()
-            if v.get('normalized', False)
+            if v.get('scaled', False)
             }.keys())
         if len(scaled_feature_names) > 0:
             nodes, dataset_sf = self.Nodes.node_scale_features(self.root_dir, scaled_feature_names)
@@ -220,30 +220,30 @@ def evaluate_model(model: {mixin}, X_test: pd.DataFrame, y_test: pd.Series, metr
             }
 
         def node_scale_features(root_dir: str, feature_names: dict):
-            feature_names_str = ','.join(feature_names)
+            feature_names_str = ','.join("'{0}'".format(x) for x in feature_names)
             code_X_train = f'''
 from sklearn.preprocessing import MinMaxScaler
 def scale_X_train(X_train: pd.DataFrame):
     scaler = MinMaxScaler()
-    X_train['{feature_names_str}'] = scaler.fit_transform(X_train['{feature_names_str}'])
-    return X_train, scaler.get_params()
+    X_train[[{feature_names_str}]] = scaler.fit_transform(X_train[[{feature_names_str}]])
+    return X_train, scaler
 '''
             code_X_test = f'''
-def scale_X_test(X_test: pd.DataFrame, scaler_params:dict):
-    scaler = MinMaxScaler().set_params(scaler_params)
-    return scaler.transform(X_test['{feature_names_str}'])
+def scale_X_test(X_test: pd.DataFrame, scaler):
+    X_test[[{feature_names_str}]] = scaler.transform(X_test[[{feature_names_str}]])
+    return [X_test]
 '''
             return [{
                 'func': 'scale_X_train',
                 'name': 'Scale_X_train',
                 'code': code_X_train,
                 'inputs': ['X_train'],
-                'outputs': ['X_train_scaled', 'scaler_params']
+                'outputs': ['X_train_scaled', 'scaler']
             }, {
                 'func': 'scale_X_test',
                 'name': 'Scale_X_test',
                 'code': code_X_test,
-                'inputs': ['X_test', 'scaler_params'],
+                'inputs': ['X_test', 'scaler'],
                 'outputs': ['X_test_scaled']
             }], [
                 dataset_wrapper('X_train_scaled', 'memory', filepath=None, layer='model_input'),

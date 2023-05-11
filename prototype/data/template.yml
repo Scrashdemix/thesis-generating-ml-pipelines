@@ -1,24 +1,31 @@
 datasets:
-#  - name: us_states
-#    type: 'csv'
-#    filepath: 'https://github.com/CivilServiceUSA/us-states/blob/v1.0.0/data/states.csv'
-  - name: salary_ds
+  - name: diabetes_ds
     type: csv
-    filepath: data/01_raw/Salary_dataset.csv
-    #versioned: True
-visualization: sweetviz
-problem: regression
+    filepath: data/01_raw/diabetes_prediction_dataset.csv
+  - name: smoking_ds
+    type: csv
+    filepath: data/01_raw/smoking_history.csv
+#visualization: sweetviz
+problem: classification
 train-test-split:
   train-ratio: 0.8
+features:
+  - age
+  - hypertension
+  - heart_disease
+  - bmi:
+      scaled: true
+  - HbA1c_level:
+      scaled: true
+  - blood_glucose_level
+target_label: diabetes
 training:
-  features:
-    - YearsExperience
-  target_label:
-    - Salary
   models:
-    - algorithm: tree.DecisionTreeRegressor
+    - algorithm: tree.DecisionTreeClassifier
       parameters:
-        criterion: ['squared_error', 'friedman_mse', 'poisson']
-    - algorithm: linear_model.LinearRegression
-metrics: [r2, max_error]
+        criterion: [gini, entropy, log_loss]
+    - algorithm: linear_model.RidgeClassifier
+      parameters:
+        alpha: [1.0, 1.5, 2.0]
+metrics: [accuracy, average_precision, recall]
 

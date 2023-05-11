@@ -20,7 +20,7 @@ train-test-split:
   test-ratio: <Value between 0 and 1>  # Ratio of test data from the original data
 features:  # [Optional:] list of feature names which are used for training all models. If none, all available features are used
     - <name of feature>:
-        normalized: MinMaxScaler  # [Optional:] whether this feature shall be normalized using this scikit-learn scaler
+        scaled: true  # [Optional:] whether this feature shall be scaled using scikit-learn's MinMaxScaler
     - ...
 target_label: <name of the feature which should be used as target variable>
 training:
