@@ -5,12 +5,12 @@ from .utils import write_parameters_file, write_pipeline_file, dataset_wrapper
 
 class ModelPipeline:
 
-    def __init__(self, config: dict, root_dir: Path, model_pipeline_dir: Path, last_datasets: list) -> None:
+    def __init__(self, config: dict, root_dir: Path, model_pipeline_dir: Path, first_dataset: str) -> None:
         self.name = 'model_pipeline'
         self.config = config
         self.root_dir = root_dir
         self.model_pipeline_dir = model_pipeline_dir
-        self.last_datasets = last_datasets
+        self.first_dataset = first_dataset
         self.next_datasets = []
         self.additional_nodes = []
         self.params = {}
@@ -25,33 +25,17 @@ class ModelPipeline:
     
     def _structure(self):
         nodes_list = []
-        # Features
-        feature_list = list(
-                {item: {}} if isinstance(item, str) else item
-                for item in self.config['features']
-        )
-        feature_all_names = list({
-            k: v
-            for d in feature_list
-            for k, v in d.items()
-            }.keys())
         # Add train-test split node
         node_tts, dataset_tts, params = self.Nodes.node_train_test_split(
-            self.root_dir, self.config, feature_all_names, input_datasets=[self.last_datasets[0]]
+            self.root_dir, self.config, self.config['additional']['feature_all_names'], input_dataset=self.first_dataset
         )
         nodes_list.append(node_tts)
         self.next_datasets.extend(dataset_tts)
         self.params.update(params)
         # Add normalization nodes
         scaled = False
-        scaled_feature_names = list({
-            k: v
-            for d in feature_list
-            for k, v in d.items()
-            if v.get('scaled', False)
-            }.keys())
-        if len(scaled_feature_names) > 0:
-            nodes, dataset_sf = self.Nodes.node_scale_features(self.root_dir, scaled_feature_names)
+        if len(self.config['additional']['scaled_feature_names']) > 0:
+            nodes, dataset_sf = self.Nodes.node_scale_features(self.root_dir, self.config['additional']['scaled_feature_names'])
             nodes_list.extend(nodes)
             self.next_datasets.extend(dataset_sf)
             scaled = True
@@ -65,7 +49,6 @@ class ModelPipeline:
         nodes_list.append(node_me)
         # Collect additional nodes
         self.additional_nodes.extend(nodes_list)
-        self.config['nodes'].extend(nodes_list)
 
     def _write_files(self):
         nodes_list = self.additional_nodes
@@ -79,7 +62,7 @@ class ModelPipeline:
         write_parameters_file(self.root_dir, self.name, self.params)
 
     class Nodes:
-        def node_train_test_split(root_dir: Path, config: dict, feature_names: list, input_datasets: list):
+        def node_train_test_split(root_dir: Path, config: dict, feature_names: list, input_dataset: list):
             code = f'''import pandas as pd
 from typing import Dict, Tuple
 from sklearn.model_selection import train_test_split
@@ -104,18 +87,17 @@ def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
                 'features': feature_names,
                 'target_label': config['target_label'],},
                 }
-            input_datasets.append('params:split_options')
             return {
                 'func': 'split_train_test',
                 'name': 'Train_test_split',
                 'code': code,
-                'inputs': input_datasets,
+                'inputs': [input_dataset, 'params:split_options'],
                 'outputs': ['X_train', 'X_test', 'y_train', 'y_test']
             }, [
-                dataset_wrapper('X_train', 'memory', filepath=None, layer='feature'),
-                dataset_wrapper('X_test', 'memory', filepath=None, layer='feature'),
-                dataset_wrapper('y_train', 'memory', filepath=None, layer='feature'),
-                dataset_wrapper('y_test', 'memory', filepath=None, layer='feature')
+                dataset_wrapper('X_train', 'memory', layer='feature'),
+                dataset_wrapper('X_test', 'memory', layer='feature'),
+                dataset_wrapper('y_train', 'memory', layer='feature'),
+                dataset_wrapper('y_test', 'memory', layer='feature')
             ], params
 
         def node_training_model(root_dir: str, config: dict, scaled: bool=False):
@@ -181,7 +163,7 @@ def get_model_type(type: str):
             parameters = {'model_options': models, 'metrics': metric_params}
             model_name = 'Model'
             output_dataset = dataset_wrapper(
-                model_name, 'pickle', f'data/06_models/{model_name}.pickle', layer='model')
+                name=model_name, type='pickle', filepath=f'data/06_models/{model_name}.pickle', layer='model')
             X_train_input_name = 'X_train_scaled' if scaled else 'X_train'
             return {
                 'func': 'train_model',
@@ -246,6 +228,6 @@ def scale_X_test(X_test: pd.DataFrame, scaler):
                 'inputs': ['X_test', 'scaler'],
                 'outputs': ['X_test_scaled']
             }], [
-                dataset_wrapper('X_train_scaled', 'memory', filepath=None, layer='model_input'),
-                dataset_wrapper('X_test_scaled', 'memory', filepath=None, layer='model_input')
+                dataset_wrapper('X_train_scaled', 'memory', layer='model_input'),
+                dataset_wrapper('X_test_scaled', 'memory', layer='model_input')
             ]

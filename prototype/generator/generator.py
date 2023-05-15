@@ -6,20 +6,47 @@ from generator.data_pipeline import DataPipeline
 from generator.model_pipeline import ModelPipeline
 from generator.hook_writer import add_hooks
 
+
+def enrich_config(config: dict) -> dict:
+    # Add dict for additional information
+    config['additional'] = {}
+    # Add last datasets name of data pipeline
+    config['additional']['data_model_dataset'] = ''
+    # Add information about features
+    config['additional']['features_list'] = list(
+            {item: {}} if isinstance(item, str) else item
+            for item in config['features']
+    )
+    config['additional']['feature_all_names'] = list({
+        k: v
+        for d in config['additional']['features_list']
+        for k, v in d.items()
+        }.keys())
+    config['additional']['features_cut_outliers'] = list({
+        k: v
+        for d in config['additional']['features_list']
+        for k, v in d.items()
+        if v.get('cut_outliers', False)
+        }.keys())
+    config['additional']['scaled_feature_names'] = list({
+        k: v
+        for d in config['additional']['features_list']
+        for k, v in d.items()
+        if v.get('scaled', False)
+        }.keys())
+    return config
+
 # structure:
 #   data pipeline
 #       Data Ingestion: conf/base/catalog.yml
-#       Data Visualization
-#       Data preprocessing steps: placeholder
+#   model pipeline
 #       Train-test split
 #       Data normalization steps: placeholder
-#   model pipeline
-#   deployment pipeline
 
 def generate(config: dict, root_dir_path: str) -> None:
     root_dir = Path(root_dir_path)
     pipeline_dir = root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'pipelines')
-    config['nodes'] = []
+    config = enrich_config(config)
     # Add layer 'raw' to initial datasets
     for ds in config['datasets']:
         if not ds.get('layer', None):
@@ -37,7 +64,7 @@ def generate(config: dict, root_dir_path: str) -> None:
 
     # Model pipeline
     model_pipeline_dir = generate_pipeline_file_structure(pipeline_dir, 'model_pipeline')
-    model_pipe = ModelPipeline(config, root_dir, model_pipeline_dir, last_datasets=data_pipe.get_next_datasets())
+    model_pipe = ModelPipeline(config, root_dir, model_pipeline_dir, first_dataset=data_pipe.get_last_dataset())
     config['datasets'].extend(model_pipe.get_next_datasets())
 
     # Data catalog

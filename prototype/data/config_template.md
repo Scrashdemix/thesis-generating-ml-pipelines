@@ -13,7 +13,7 @@ datasets:
       <Credentials needed for accessing the dataset>
   - name: ...
     ...
-visualization: 'sweetviz'  # [Optional:] data visualization using sweetviz (html report gets generated)
+visualization: true  # [Optional:] data visualization using sweetviz (html report gets generated)
 problem: 'regression' | 'classification'  # Type of problem
 train-test-split:
   train-ratio: <Value between 0 and 1>  # Ratio of training data from the original data
@@ -21,6 +21,7 @@ train-test-split:
 features:  # [Optional:] list of feature names which are used for training all models. If none, all available features are used
     - <name of feature>:
         scaled: true  # [Optional:] whether this feature shall be scaled using scikit-learn's MinMaxScaler
+        cut_outliers: true  # [Optional:] whether outliers will be dropped from the dataframe. Outliers are data points whose numerical columns are outside the 5th and 95th percentile.
     - ...
 target_label: <name of the feature which should be used as target variable>
 training:
