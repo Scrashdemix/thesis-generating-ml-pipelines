@@ -3,7 +3,6 @@ from pathlib import Path
 from generator.utils import generate_pipeline_file_structure
 from generator.gen_data_catalog import update_data_catalog
 from generator.data_pipeline import DataPipeline
-from generator.feature_pipeline import FeatureEngineering
 from generator.model_pipeline import ModelPipeline
 from generator.hook_writer import add_hooks
 
@@ -23,7 +22,7 @@ def generate(config: dict, root_dir_path: str) -> None:
     config['nodes'] = []
     # Add layer 'raw' to initial datasets
     for ds in config['datasets']:
-        if ds.get('layer', None) is None:
+        if not ds.get('layer', None):
             ds['layer'] = 'raw'
     # Hooks
     add_hooks(root_dir, config)

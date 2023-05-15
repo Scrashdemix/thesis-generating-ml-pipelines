@@ -7,7 +7,7 @@ def add_hooks(root_dir: Path, config: Dict):
     imports = set()
     classes = []
     hooks = []
-    if not config.get('visualization', None) is None:
+    if config.get('visualization', None):
         imp, cls, hook_name = add_hook_data_visualizer()
         imports.update(imp)
         classes.append(cls)

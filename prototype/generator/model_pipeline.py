@@ -89,8 +89,8 @@ def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
     target_label = parameters['target_label']
     X = data[feature_params]
     y = data[target_label]
-    train_ratio = parameters.get('train-test-split', None).get('train-ratio', None)
-    test_ratio = parameters.get('train-test-split', None).get('test-ratio', None)
+    train_ratio = parameters.get('train-test-split', {{}}).get('train-ratio', None)
+    test_ratio = parameters.get('train-test-split', {{}}).get('test-ratio', None)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         train_size=train_ratio,
@@ -137,7 +137,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, model_options: dict, 
     search_space = []
     for param in model_options:
         new_model = {{'clf': [get_model_type(param['algorithm'])()]}}
-        if not param.get('parameters', None) is None:
+        if param.get('parameters', None):
             new_model.update({{'clf__'+key: value for key, value in param['parameters'].items()}})
         search_space.append(new_model)
     grid_search = GridSearchCV(
@@ -174,7 +174,7 @@ def get_model_type(type: str):
             for m in config['training']['models']:
                 params = m.get('parameters', None)
                 new_model = {'algorithm': m['algorithm']}
-                if not params is None:
+                if params:
                     new_model['parameters'] = params
                 models.append(new_model)
             metric_params = config.get('metrics') if config.get('metrics') else ''
