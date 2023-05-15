@@ -68,12 +68,14 @@ def join_datasets(*datasets) -> pd.DataFrame:
         def node_remove_outliers(config: dict):
             conditions = []
             for cond in config['additional']['features_cut_outliers']:
-                conditions.append(f'''(df['{cond}'] < df['{cond}'].quantile(0.95))''')
-                conditions.append(f'''(df['{cond}'] > df['{cond}'].quantile(0.05))''')
-            cond_str = ' & '.join(conditions)
+                conditions.append(f'''\t\t(df['{cond}'] < df['{cond}'].quantile(0.95))''')
+                conditions.append(f'''\t\t(df['{cond}'] > df['{cond}'].quantile(0.05))''')
+            cond_str = ' &\n'.join(conditions)
             code = f'''
 def cut_outliers(df: pd.DataFrame) -> pd.DataFrame:
-    return [df[{cond_str}]]
+    return [df[
+{cond_str}
+        ]]
 '''
             output_dataset = dataset_wrapper(name='prm_dataset', type='memory', layer='primary')
             return {
