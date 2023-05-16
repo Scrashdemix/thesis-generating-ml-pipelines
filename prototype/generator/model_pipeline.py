@@ -108,13 +108,13 @@ from sklearn.base import BaseEstimator
 def train_model(X_train: pd.DataFrame, y_train: pd.Series, model_options: dict, metrics: list):
     from sklearn.pipeline import Pipeline
     from sklearn.model_selection import GridSearchCV
-    from mlflow import log_params
-    from mlflow.sklearn import log_model
+    from mlflow.sklearn import autolog
 
     class DummyEstimator(BaseEstimator):
         def fit(self): pass
         def score(self): pass
     
+    autolog()
     pipeline = Pipeline([('clf', DummyEstimator())])
     search_space = []
     for param in model_options:
@@ -129,12 +129,6 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, model_options: dict, 
         refit=metrics[0],
         verbose=4)
     grid_search.fit(X_train, y_train)
-    log_params({{'best_params': grid_search.best_params_}})
-    log_model(
-        sk_model=grid_search.best_estimator_,
-        artifact_path="data/06_models/Model.pickle",
-        registered_model_name="model",
-    )
     return [grid_search.best_estimator_]
     
 
@@ -175,14 +169,19 @@ def get_model_type(type: str):
 
         def node_model_evaluation(root_dir: str, config: dict, scaled: bool=False):
             mixin = 'RegressorMixin' if str(config['problem']).lower() == 'regression' else 'ClassifierMixin'
+            model_type = 'regressor' if str(config['problem']).lower() == 'regression' else 'classifier'
             default_metric = 'r2' if str(config['problem']).lower() == 'regression' else 'accuracy'
             code = f'''
 from sklearn.base import {mixin}
 from sklearn.metrics import get_scorer
-from mlflow import log_metric
+from mlflow import log_metric, evaluate
+from mlflow.sklearn import log_model
 def evaluate_model(model: {mixin}, X_test: pd.DataFrame, y_test: pd.Series, metrics: list):
     if not hasattr(model, 'predict'):
         raise AttributeError('The model has no attribute "predict".')
+    model_info = log_model(model, 'model')
+    data = X_test.join(y_test)
+    evaluate(model_info.model_uri, data, targets=y_test.name, model_type='{model_type}')
     if len(metrics) == 0:
         score = model.score(X_test, y_test)
         log_metric('{default_metric}', score)

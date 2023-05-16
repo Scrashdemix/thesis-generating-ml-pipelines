@@ -12,12 +12,13 @@ def add_hooks(root_dir: Path, config: Dict):
         imports.update(imp)
         classes.append(cls)
         hooks.append(hook_name)
-    imp, cls, hook_name = add_hook_mlflow_tracking()
-    imports.update(imp)
-    classes.append(cls)
-    hooks.append(hook_name)
+#    imp, cls, hook_name = add_hook_mlflow_tracking()
+#    imports.update(imp)
+#    classes.append(cls)
+#    hooks.append(hook_name)
     write_hooks_file(hooks_file, imports, classes)
-    add_hooks_to_settings(root_dir, hooks)
+    if len(hooks) > 0:
+        add_hooks_to_settings(root_dir, hooks)
 
 
 def write_hooks_file(hooks_file: Path, imports: Set, classes: List):

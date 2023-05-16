@@ -38,6 +38,7 @@ def create_pipeline(**kwargs) -> Pipeline:
 """)
 
 def write_parameters_file(root_dir: Path, pipeline_name: str, params: dict) -> None:
+    os.makedirs(root_dir.joinpath('conf', 'base', 'parameters'), exist_ok=True)
     with open(root_dir.joinpath('conf', 'base', 'parameters', f'{pipeline_name}.yml'), 'w') as file:
         yaml.dump(params, file, sort_keys=False)
 
