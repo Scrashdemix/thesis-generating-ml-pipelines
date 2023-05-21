@@ -4,15 +4,20 @@ This is the questionnaire for the second round of interviews.
 ## Introduction
 The introduction of the prototype to the participant contains a short description of how the input of the generator should look like and how the generator can be executed as well as a short guide on installation.
 
+## Experience Questions
+- __Experience with kedro__: Years of professional experience
+- __Experience with MLflow__: Years of professional experience
+
 If the participant has no experience with kedro, the interviewer will explain the folder and file structure as well as kedro-viz.
 
 If the participant has no experience with MLflow, the interviewer will explain the basic functionality using the MLflow UI.
 
-The participant is then able to experiment and play around with different input for the generator and use the resulting ML pipelines for 10 minutes.
+## Exercise
+After the installation process, the participant is able to experiment and play around with different input for the generator and use the resulting ML pipelines for 10 minutes.
 
-## Experience Questions
-- __Experience with kedro__: Years of professional experience
-- __Experience with MLflow__: Years of professional experience
+In the following 20 minutes the participant is tasked with solving an exercise using the generator. This exercise consists of a classification task using a [diabetes prediction dataset](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset). This dataset is split in two separate datasets to be able to show the functionality of the generator to add the functionality to join datasets to the generated pipeline. The goal of the exercise is to build a pipeline with min-max scaling as well as outlier detection and removal.
+
+The time needed for solving the task is measured.
 
 ## Quantitative Questions
 The participant can rate the extend to which they agree with the statement on a seven-level scale (Extremely likely, quite likely, slightly likely, neither, slightly unlikely, quite unlikely, extremely unlikely).
