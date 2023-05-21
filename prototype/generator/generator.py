@@ -22,12 +22,12 @@ def enrich_config(config: dict) -> dict:
         for d in config['additional']['features_list']
         for k, v in d.items()
         }.keys())
-    config['additional']['features_cut_outliers'] = list({
+    config['additional']['features_cut_outliers'] = {
         k: v
         for d in config['additional']['features_list']
         for k, v in d.items()
         if v.get('cut_outliers', False)
-        }.keys())
+        }
     config['additional']['scaled_feature_names'] = list({
         k: v
         for d in config['additional']['features_list']

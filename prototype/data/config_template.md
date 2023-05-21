@@ -21,7 +21,7 @@ train-test-split:
 features:  # [Optional:] list of feature names which are used for training all models. If none, all available features are used
     - <name of feature>:
         scaled: true  # [Optional:] whether this feature shall be scaled using scikit-learn's MinMaxScaler
-        cut_outliers: true  # [Optional:] whether outliers will be dropped from the dataframe. Outliers are data points whose numerical columns are outside the 5th and 95th percentile.
+        cut_outliers: percentile | iqr | zscore  # [Optional:] whether outliers will be dropped from the dataframe. The value determines the algorithm chosen for detecting outliers. 'percentile' removes the 5th and 95th percentile of the data, 'iqr' removes data points which are outside of 1.5-times the interquartile range below/above the 1st and 3rd quartile, 'zscore' removes data points with a z-score above 3 
     - ...
 target_label: <name of the feature which should be used as target variable>
 training:

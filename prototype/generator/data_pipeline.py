@@ -52,6 +52,7 @@ class DataPipeline:
                 layer='intermediate')
             code = """import pandas as pd
 from functools import reduce
+import numpy as np
 
 
 def join_datasets(*datasets) -> pd.DataFrame:
@@ -66,16 +67,21 @@ def join_datasets(*datasets) -> pd.DataFrame:
             }, output_dataset
 
         def node_remove_outliers(config: dict):
-            conditions = []
-            for cond in config['additional']['features_cut_outliers']:
-                conditions.append(f'''\t\t(df['{cond}'] < df['{cond}'].quantile(0.95))''')
-                conditions.append(f'''\t\t(df['{cond}'] > df['{cond}'].quantile(0.05))''')
-            cond_str = ' &\n'.join(conditions)
-            code = f'''
+            code = '''
 def cut_outliers(df: pd.DataFrame) -> pd.DataFrame:
-    return [df[
-{cond_str}
-        ]]
+'''
+            for feature_name, info in config['additional']['features_cut_outliers'].items():
+                if info['cut_outliers'].lower() == 'percentile':
+                    code += f'''\tdf = df[(df['{feature_name}'] < df['{feature_name}'].quantile(0.95)) & (df['{feature_name}'] > df['{feature_name}'].quantile(0.05))]\n'''
+                elif info['cut_outliers'].lower() == 'iqr':
+                    code += f'''\tiqr = df['{feature_name}'].quantile(0.75) - df['{feature_name}'].quantile(0.25)\n'''
+                    code += f'''\tdf = df[(df['{feature_name}'] < df['{feature_name}'].quantile(0.75) + 1.5 * iqr) & (df['{feature_name}'] > df['{feature_name}'].quantile(0.25) - 1.5 * iqr)]\n'''
+                elif info['cut_outliers'].lower() == 'zscore':
+                    code += f'''\tdf = df[np.abs(df['{feature_name}'] - df['{feature_name}'].mean()) / df['{feature_name}'].std() <= 3] \n'''
+                else:
+                    raise RuntimeError('There is no algorithm for cutting outliers called {}'.format(info['cut_outliers']))
+            
+            code += f'''\treturn [df]
 '''
             output_dataset = dataset_wrapper(name='prm_dataset', type='memory', layer='primary')
             return {
