@@ -15,12 +15,19 @@ If the participant has no experience with MLflow, the interviewer will explain t
 ## Exercise
 After the installation process, the participant is able to experiment and play around with different input for the generator and use the resulting ML pipelines for 10 minutes.
 
-In the following 20 minutes the participant is tasked with solving an exercise using the generator. This exercise consists of a classification task using a [diabetes prediction dataset](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset). This dataset is split in two separate datasets to be able to show the functionality of the generator to add the functionality to join datasets to the generated pipeline. The goal of the exercise is to build a pipeline with min-max scaling as well as outlier detection and removal.
+In the following 20 minutes the participant is tasked with solving an exercise using the generator.
 
+During the exercise, the participant should mention their thoughts about what they are doing (think-aloud protocol). 
+
+The exercise consists of a classification task using a [diabetes prediction dataset](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset). This dataset is split in two separate datasets to be able to show the functionality of the generator to add the functionality to join datasets to the generated pipeline. The goal of the exercise is to build a pipeline with min-max scaling as well as outlier detection and removal.
+
+The exercise is solved correctly if the kedro project contains a ML pipeline consisting of a data pipeline (including joining datasets and outlier removal) and a model pipeline (including train-test split, scaling nodes, model training and model evaluation) and the participant can run the pipeline successfully such that a model is created.
+
+During the exercise the participant is able to view the documentation of the generator and to ask questions regarding the usage of the generator and its input. Furthermore, is the interviewer allowed to provide tips if the participant seems to struggle with the exercise.
 The time needed for solving the task is measured.
 
 ## Quantitative Questions
-The participant can rate the extend to which they agree with the statement on a seven-level scale (Extremely likely, quite likely, slightly likely, neither, slightly unlikely, quite unlikely, extremely unlikely).
+These questions can be answered via a survey tool. Here, the participant can rate the extend to which they agree with the statement on a seven-level scale (Extremely likely, quite likely, slightly likely, neither, slightly unlikely, quite unlikely, extremely unlikely). The questions mention "the generator" with which a more productive program is meant.
 ### Usefulness
 - __Work More Quickly__: Using the generator in my job would enable me to accomplish tasks more quickly.
 - __Job Performance__: Using the generator would improve my job performance.
@@ -38,30 +45,30 @@ The participant can rate the extend to which they agree with the statement on a 
 - __Overall Ease of Use__: I would find the generator easy to use.
 
 ## Qualitative Questions
-- How can the generator be improved?
-  - __Interaction__:
-    - User input
-      - How can the user input be improved?
-      - What kind of user input/user interaction would you prefer?
-    - Program execution
-      - How would you like to start the generation process?
-      - What output format/kind do you prefer? (Current: Existing kedro project is modified)
-  - __Resulting pipeline__:
-    - Pipeline structure
-      - What do you think about the structure of the resulting pipeline?
-      - How would you improve the structure of the resulting pipeline?
-    - Support for data engineering algorithms
-      - How can the existing data engineering algorithms can be improved?
-      - What data engineering algorithms would you want to be added? 
-    - Support for feature engineering algorithms
-      - How can the existing feature engineering algorithms can be improved?
-      - What feature engineering algorithms would you want to be added?
-    - More general AutoML
-      - What do you think about AutoML as part of the resulting pipeline?
-      - Would you use an AutoML functionality?
-    - Model Deployment Pipeline
-      - How important would be a generated model deployment pipeline for you?
-      - What functionality could be part of a model deployment pipeline?
-    - Tool & platform support besides kedro & MLflow
-      - Which platforms would you like being supported?
-      - Which tools would you like being supported?
+- __General__: How can the generator be improved? How should the generator work differently than it does now?
+- __Interaction__:
+  - User input
+    - How can the user input be improved?
+    - What kind of user input/user interaction would you prefer?
+  - Program execution
+    - How would you like to start the generation process?
+    - What output format/kind do you prefer? (Current: Existing kedro project is modified)
+- __Resulting pipeline__:
+  - Pipeline structure
+    - What do you think about the structure of the resulting pipeline?
+    - How would you improve the structure of the resulting pipeline?
+  - Support for data engineering algorithms
+    - How can the existing data engineering algorithms can be improved?
+    - What data engineering algorithms would you want to be added? 
+  - Support for feature engineering algorithms
+    - How can the existing feature engineering algorithms can be improved?
+    - What feature engineering algorithms would you want to be added?
+  - More general AutoML
+    - What do you think about AutoML as part of the resulting pipeline?
+    - Would you use an AutoML functionality?
+  - Model Deployment Pipeline
+    - How important would be a generated model deployment pipeline for you?
+    - What functionality could be part of a model deployment pipeline?
+  - Tool & platform support besides kedro & MLflow
+    - Which platforms would you like being supported?
+    - Which tools would you like being supported?
