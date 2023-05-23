@@ -64,10 +64,15 @@ class ModelPipeline:
     class Nodes:
         def node_train_test_split(root_dir: Path, config: dict, feature_names: list, input_dataset: list):
             code = f'''import pandas as pd
+import numpy as np
 from typing import Dict, Tuple
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder
             
 def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
+    # Encode features which are not numeric
+    data[data.select_dtypes(exclude=np.number).columns] = OrdinalEncoder().fit_transform(data.select_dtypes(exclude=np.number))
+    # Create X and y
     target_label = parameters['target_label']
     y = data[target_label]
     if len(parameters['features']) == 0:
