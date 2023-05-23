@@ -13,10 +13,13 @@ def enrich_config(config: dict) -> dict:
     # Add last datasets name of data pipeline
     config['additional']['data_model_dataset'] = ''
     # Add information about features
-    config['additional']['features_list'] = list(
-            {item: {}} if isinstance(item, str) else item
-            for item in config['features']
-    )
+    if config.get('features', False):
+        config['additional']['features_list'] = list(
+                {item: {}} if isinstance(item, str) else item
+                for item in config['features']
+        )
+    else:
+        config['additional']['features_list'] = list()
     config['additional']['feature_all_names'] = list({
         k: v
         for d in config['additional']['features_list']

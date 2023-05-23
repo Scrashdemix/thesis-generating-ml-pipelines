@@ -68,10 +68,13 @@ from typing import Dict, Tuple
 from sklearn.model_selection import train_test_split
             
 def split_train_test(data: pd.DataFrame, parameters: Dict) -> Tuple:
-    feature_params = parameters['features']
     target_label = parameters['target_label']
-    X = data[feature_params]
     y = data[target_label]
+    if len(parameters['features']) == 0:
+        X = data.drop(target_label, axis=1)
+    else:
+        feature_params = parameters['features']
+        X = data[feature_params]
     train_ratio = parameters.get('train-test-split', {{}}).get('train-ratio', None)
     test_ratio = parameters.get('train-test-split', {{}}).get('test-ratio', None)
     X_train, X_test, y_train, y_test = train_test_split(
