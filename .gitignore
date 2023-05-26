@@ -171,3 +171,4 @@ cython_debug/
 conf/base/catalog.yml
 .vscode/launch.json
 prototype/data/catalog.yml
+prototype.zip
