@@ -3,7 +3,7 @@ from typing import Dict, List, Set, Tuple
 
 
 def add_hooks(root_dir: Path, config: Dict):
-    hooks_file = root_dir.joinpath('src', root_dir.name, 'hooks.py')
+    hooks_file = root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'hooks.py')
     imports = set()
     classes = []
     hooks = []
@@ -33,8 +33,8 @@ def add_hooks_to_settings(root_dir:Path, hook_classes: List):
     hook_init_string = ''
     for hook in hook_classes:
         hook_init_string  += f'{hook}(),'
-    with open(root_dir.joinpath('src', root_dir.name, 'settings.py'), 'w') as file:
-        file.write(f'''from {root_dir.name}.hooks import {classes_string}
+    with open(root_dir.joinpath('src', root_dir.name.replace('-', '_'), 'settings.py'), 'w') as file:
+        file.write(f'''from {root_dir.name.replace('-', '_')}.hooks import {classes_string}
 
 HOOKS = ({hook_init_string})
 ''')

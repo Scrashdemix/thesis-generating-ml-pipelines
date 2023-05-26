@@ -1,7 +1,11 @@
 # Package requirements for generated kedro project
-Python <3.11, >=3.7 
+#Python ==3.10.2 
 kedro==0.18.8
 kedro-mlflow==0.11.8
+mlflow==2.3
 kedro-viz==6.1.0
 sweetviz==2.1.4
+shap==0.41.0
 pandas==1.5.3
+scikit-learn==1.2.2
+numpy==1.23.4
