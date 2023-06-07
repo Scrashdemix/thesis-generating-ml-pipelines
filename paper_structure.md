@@ -1,14 +1,17 @@
-Abstract
-Introduction
-Related Work
+0. Abstract
 
-Method (Overall methodology)
-Exploration Interview Results
-Prototype Development
+1. Introduction
+2. Background
+   1. Related Work
 
-Evaluation Interview Method
-Evaluation Interview Results
-Discussion
+3. Research Design
+4. Exploration
+5. Generation Approach
+   1. ML Pipelines
+   2. Prototype Development
 
-Threats to Validity
-Conclusion & Outlook
+6. Evaluation
+7. Discussion
+   1. Threats to Validity
+
+8. Conclusion & Outlook
