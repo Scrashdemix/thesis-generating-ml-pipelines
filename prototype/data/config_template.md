@@ -49,6 +49,7 @@ training:
     - algorithm: <model algorithm>  # maybe some kind of key for sklearn (Example: 'linear_model.LinearRegression')
       parameters:
         <name of parameter>:  # List of values or min/max
+    - ...
 ```
 ## Model Evaluation
 ```

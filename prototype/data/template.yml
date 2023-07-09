@@ -5,19 +5,10 @@ datasets:
   - name: smoking_ds
     type: csv
     filepath: data/01_raw/smoking_history.csv
-#visualization: sweetviz
+visualization: true
 problem: classification
 train-test-split:
   train-ratio: 0.8
-features:
-  - age
-  - hypertension
-  - heart_disease
-  - bmi:
-      scaled: true
-  - HbA1c_level:
-      scaled: true
-  - blood_glucose_level
 target_label: diabetes
 training:
   models:
