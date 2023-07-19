@@ -39,12 +39,6 @@ def enrich_config(config: dict) -> dict:
         }.keys())
     return config
 
-# structure:
-#   data pipeline
-#       Data Ingestion: conf/base/catalog.yml
-#   model pipeline
-#       Train-test split
-#       Data normalization steps: placeholder
 
 def generate(config: dict, root_dir_path: str) -> None:
     root_dir = Path(root_dir_path)
@@ -61,10 +55,6 @@ def generate(config: dict, root_dir_path: str) -> None:
     data_pipe = DataPipeline(config, data_pipeline_dir)
     config['datasets'] = data_pipe.get_config()['datasets']
 
-    # Feature engineering pipeline
-    #feature_pipeline_dir = generate_pipeline_file_structure(pipeline_dir, 'feature_pipeline')
-    #feature_pipe = FeatureEngineering(config, root_dir, feature_pipeline_dir, last_datasets=data_pipe.get_next_datasets())
-
     # Model pipeline
     model_pipeline_dir = generate_pipeline_file_structure(pipeline_dir, 'model_pipeline')
     model_pipe = ModelPipeline(config, root_dir, model_pipeline_dir, first_dataset=data_pipe.get_last_dataset())
@@ -72,6 +62,3 @@ def generate(config: dict, root_dir_path: str) -> None:
 
     # Data catalog
     update_data_catalog(config['datasets'], root_directory=root_dir)
-    # Data pipeline
-    # Train-test split
-    # Model pipeline

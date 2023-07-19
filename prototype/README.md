@@ -14,4 +14,7 @@ loc     : kedro project main directory
 ```
 
 ## Interviews
-Additionally, copy the dataset [diabetes_prediction_dataset.csv](./data/diabetes_prediction_dataset.csv) and [smoking_history.csv](./data/smoking_history.csv) into the `data/01_raw` directory in the target kedro project. 
+Additionally, copy the dataset [diabetes_prediction_dataset.csv](./data/diabetes_prediction_dataset.csv) and [smoking_history.csv](./data/smoking_history.csv) into the `data/01_raw` directory in the target kedro project.
+
+## Requirements
+The requirements listed in [requirements_kedro.txt](requirements_kedro.txt) relate to the kedro project in which the ML pipeline is generated into.

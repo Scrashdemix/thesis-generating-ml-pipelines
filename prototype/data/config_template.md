@@ -31,8 +31,8 @@ target_label: <name of the feature which should be used as target variable>
 ## Train-Test Split
 ```
 train-test-split:
-  train-ratio: <Value between 0 and 1>  # [Optional: ] Ratio of training data from the original data
-  test-ratio: <Value between 0 and 1>  # [Optional: ] Ratio of test data from the original data
+  train-ratio: <Value between 0 and 1>  # [Optional: ] Ratio of training data to the original data
+  test-ratio: <Value between 0 and 1>  # [Optional: ] Ratio of test data to the original data
 ```
 ## Feature Selection & Engineering
 ```
@@ -46,7 +46,7 @@ features:  # [Optional:] list of feature names which are used for training all m
 ```
 training:
   models:
-    - algorithm: <model algorithm>  # maybe some kind of key for sklearn (Example: 'linear_model.LinearRegression')
+    - algorithm: <model algorithm>  # key for sklearn (Example: 'linear_model.LinearRegression')
       parameters:
         <name of parameter>:  # List of values or min/max
     - ...
